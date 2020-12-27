@@ -22,6 +22,8 @@ import pickle
 
 
 def load_data(database_filepath):
+    """ This function read the data from DB into a DataFrame,
+    returns the X(features), Y(Target variable) and column names """
     engine = create_engine('sqlite:///' + database_filepath)
     df = pd.read_sql_table('InsertTableName', engine)
     X = df['message']
@@ -31,6 +33,8 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
+    """ This function takes raw text as input and returns tokenized text data.
+     Does normalization, stop words removal, stemming and lemmatization."""
     url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
     detected_urls = re.findall(url_regex, text)
     for url in detected_urls:
@@ -48,6 +52,8 @@ def tokenize(text):
 
 
 def build_model():
+    """ This function mainly contains the steps of ML pipeline, 
+    using TF-IDF transformers, Adaboost Classifier and GridsearchCV to find best hyperparameters for this model."""
     pipeline = Pipeline([
             ('features', FeatureUnion([
 
@@ -68,6 +74,8 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    """ This function evaluates our model based on some suitable parameters
+     and outputs f1 score, precision and recall for each category."""
     Y_pred = model.predict(X_test)
     
     accuracy = (Y_pred == Y_test).mean().mean()
@@ -83,6 +91,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    """ Saving the model as a pickle object."""
     pickle.dump(model, open(model_filepath, 'wb'))
 
 
